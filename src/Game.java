@@ -21,38 +21,16 @@ public class Game {
         ArrayList<point> hole=new ArrayList<>();
         for (int x = 1; x < board.length; x++) {
             for (int y = 1; y < board[0].length; y++) {
-
                 if (board[x][y] == 3 ||board[x][y]==5 ) {
                     hole.add(new point(x,y));
                 }
             }
         }
-        if(hole.isEmpty())
-        {
-            return null;
-        }else {
-            return hole;
-        }
+      return hole;
     }
 
-    public int heuristic(int [][]board){
-        ArrayList<point> seed=searchSeed(board);
-        ArrayList<point> hole=searchHole(board);
-        point farmer=searchFarmer(board);
 
-        int xoffamerseed= Math.abs(farmer.x- seed.get(0).x);
-        int yoffamerseed= Math.abs(farmer.y- seed.get(0).y);
-        int xoffamerseed1= Math.abs(farmer.x- seed.get(1).x);
-        int yoffamerseed1= Math.abs(farmer.y- seed.get(1).y);
-       int xofssedhoel0 = Math.abs(seed.get(0).x-hole.get(0).x);
-        int yofssedhoel0 = Math.abs(seed.get(0).y-hole.get(0).y);
-        int xofssedhoel1 = Math.abs(seed.get(1).x-hole.get(1).x);
-        int yofssedhoel1 = Math.abs(seed.get(1).y-hole.get(1).y);
-
-        return xoffamerseed+yoffamerseed+xoffamerseed1+yoffamerseed1+xofssedhoel0+yofssedhoel0+xofssedhoel1+yofssedhoel1;
-    }
-
-    public void printBoard(State state){
+    public boolean printBoard(State state){
         for (int[] ints : state.board) {
             for (int anInt : ints) {
                 switch (anInt) {
@@ -67,6 +45,7 @@ public class Game {
             }
             System.out.println();
         }
+        return false;
     }
 
     public point searchFarmer(int[][] board) {
@@ -234,7 +213,7 @@ public class Game {
 
     public boolean endGame(int[][] board) {
        ArrayList<point>hole= searchHole(board);
-         if (hole==null) {
+         if (hole.isEmpty()) {
             System.out.print("YOU WIN \n End Game");
             return true;
         }
@@ -317,6 +296,31 @@ public class Game {
         return board;
     }
 
+    public int heuristic(int [][]board){
+
+        ArrayList<point> seed=searchSeed(board);
+        ArrayList<point> hole=searchHole(board);
+        point farmer=searchFarmer(board);
+        int count=0;
+        int count1=0;
+
+        if(farmer.x+1==9 || farmer.y+1==9 || farmer.x-1==9 || farmer.y-1==9)
+        {count++;}
+        if(farmer.x+1==2 && farmer.x+2==2 || farmer.y+1==2 && farmer.y+2==2)
+        {count++;}
+        if(farmer.x-1==2 && farmer.x-2==2 || farmer.y-1==2 && farmer.y-2==2)
+        {count++;}
+        for(int i=0;i< seed.size();i++) {
+            count+=Math.abs( farmer.x-seed.get(i).x) +Math.abs( farmer.y-seed.get(i).y);
+        }
+        for (int j = 0; j < hole.size(); j++) {
+            for (int s = 0; s < seed.size(); s++) {
+                count1 += Math.abs(seed.get(s).x - hole.get(j).x) + Math.abs(seed.get(s).y - hole.get(j).y);
+            }
+        }
+        return count+count1;
+    }
+
     public ArrayList<State> getNextState(int [][]originalBoard,int cost) {
         point farmer=searchFarmer(originalBoard);
         ArrayList<State>states=new ArrayList<>();
@@ -330,6 +334,34 @@ public class Game {
             states.add(new State(board,farmer,cost));
         }
 
+        return states;
+    }
+    public ArrayList<State> getNextState(int [][]originalBoard,double cost) {
+        point farmer=searchFarmer(originalBoard);
+        ArrayList<State>states=new ArrayList<>();
+        ArrayList<point> points=moveOne(originalBoard);
+        for (point point : points) {
+            point p1, p2;
+            p1 = new point(point.x, point.y);
+            p2 = new point(point.z, point.v);
+            int[][] board = copyBord(originalBoard);
+            board = move(board, farmer, p1, p2);
+            states.add(new State(board,farmer,cost));
+        }
+        return states;
+    }
+    public ArrayList<State> getNextState(int [][]originalBoard) {
+        point farmer=searchFarmer(originalBoard);
+        ArrayList<State>states=new ArrayList<>();
+        ArrayList<point> points=moveOne(originalBoard);
+        for (point point : points) {
+            point p1, p2;
+            p1 = new point(point.x, point.y);
+            p2 = new point(point.z, point.v);
+            int[][] board = copyBord(originalBoard);
+            board = move(board, farmer, p1, p2);
+            states.add(new State(board,farmer));
+        }
         return states;
     }
 }

@@ -2,32 +2,45 @@ import java.util.Arrays;
 
 import java.lang.*;
 
-public class State implements Comparable<State>{
-    int cost=0;
-    int [][]board;
+public class State implements Comparable<State> {
+    int cost = 0;
+
+    int[][] board;
     point farmer;
     State parent;
+    Game game=new Game();
+    State(int[][] board, point farmer) {
+        this.board = board;
+        this.farmer = farmer;
 
-    State(int [][]board, point farmer)
-    {
-        this.board=board;
-        this.farmer=farmer;
+    }
+
+    State(int[][] board, point farmer, int cost) {
+        this.board = board;
+        this.farmer = farmer;
+        this.cost = cost;
 
     }
 
-     State(int [][]board, point farmer,int cost)
-    {
-        this.board=board;
-        this.farmer=farmer;
-        this.cost=cost;
+    State(int[][] board, point farmer, int cost, State parent) {
+        this.board = board;
+        this.farmer = farmer;
+        this.cost = cost;
+        this.parent = parent;
 
     }
-    State(int [][]board, point farmer,int cost,State parent)
-    {
-        this.board=board;
-        this.farmer=farmer;
-        this.cost=cost;
-        this.parent=parent;
+    State(int[][] board, point farmer, double fullcost) {
+        this.board = board;
+        this.farmer = farmer;
+        this.cost = (int)fullcost+ game.heuristic(board);
+
+    }
+
+    State(int[][] board, point farmer, double fullcost, State parent) {
+        this.board = board;
+        this.farmer = farmer;
+        this.cost = (int) fullcost + game.heuristic(board);
+        this.parent = parent;
 
     }
 
@@ -47,11 +60,10 @@ public class State implements Comparable<State>{
 
     @Override
     public int compareTo(State o) {
-            return Integer.compare(this.cost,o.cost);
-        }
-
-
-
+        return Integer.compare(this.cost, o.cost);
     }
+
+
+}
 
 
